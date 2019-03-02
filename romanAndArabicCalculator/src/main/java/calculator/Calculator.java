@@ -1,5 +1,6 @@
 package calculator;
 
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ public class Calculator {
         String numbers = "";
         String value = " ";
         int count = 0;
-        int notDigitIndex = 0;
+        int index = 0;
         char ch = ' ';
         boolean digit = false;
 
@@ -21,10 +22,6 @@ public class Calculator {
         }
         if (0 == count) {
             string = RomanConverter.convert(string);
-        }
-
-        while (!Character.isDigit(string.charAt(notDigitIndex))) {
-            notDigitIndex++;
         }
 
         for (int i = 0; i < string.length(); i++) {
@@ -45,8 +42,14 @@ public class Calculator {
                 }
             }
             digit = false;
-            if (0 < i && string.charAt(i - 1) == '-' && i <= notDigitIndex) {
-                list.add(i - 1, "0");
+
+            if (0 == i && string.charAt(i) == '-') {
+                list.add(0, "0");
+            }
+
+            if (0 < i && string.charAt(i) == '-' && string.charAt(i-1) == '(') {
+                list.add(i + index, "0");
+                index++;
             }
 
             if (i == string.length() - 1) {
@@ -55,6 +58,7 @@ public class Calculator {
                 }
             }
         }
+
         return Integer.parseInt(calc(list).get(0));
     }
 

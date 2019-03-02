@@ -11,17 +11,39 @@ public class SerializeTest {
         Group g1 = new Group();
         Group g2 = new Group();
 
-        Circle c1 = new Circle("ONEcolorCircle", 1);
-        Triangle t2 = new Triangle("TWOcolorTrianlge", 2);
-        g2.addFigures(t2);
-        g1.addFigures(c1);
+
+        Circle c1 = new Circle("1_Black", 1);
+        Triangle t2 = new Triangle("2_Blue", 2);
+        Triangle t3 = new Triangle("3_Pink", 2);
+        Triangle t4 = new Triangle("4_Yellow", 2);
+        Triangle t5 = new Triangle("5_Cyan", 2);
+        g1.addFigures(t2, c1);
+        g2.addFigures(t3,t4,t5);
+
         g1.addAll(g2);
 
         String expectedResult = "\n" +
+                "<Group>\n" +
+                "<sb>\n" +
+                "<list>()()</list> \n" +
+                "<childGroups>()</childGroups>\n" +
+                "</Group>\n" +
+                "<Triangle>\n" +
+                "\t<String>\n" +
+                "\t\t<name>color</name>\n" +
+                "\t\t<value>2_Blue</value>\n" +
+                "\t</String>\n" +
+                "\t<int>\n" +
+                "\t\t<name>size</name>\n" +
+                "\t\t<value>2</value>\n" +
+                "\t</int>\n" +
+                "\t<method>fill</method>\n" +
+                "\t<method>draw</method>\n" +
+                "</Triangle>\n" +
                 "<Circle>\n" +
                 "\t<String>\n" +
                 "\t\t<name>color</name>\n" +
-                "\t\t<value>ONEcolorCircle</value>\n" +
+                "\t\t<value>1_Black</value>\n" +
                 "\t</String>\n" +
                 "\t<int>\n" +
                 "\t\t<name>size</name>\n" +
@@ -31,10 +53,39 @@ public class SerializeTest {
                 "\t<method>draw</method>\n" +
                 "</Circle>\n" +
                 "<InnerGroupLevel 1>\n" +
+                "<Group>\n" +
+                "<sb>\n" +
+                "<list>()()()</list> \n" +
+                "<childGroups></childGroups>\n" +
+                "</Group>\n" +
                 "\t<Triangle>\n" +
                 "\t\t<String>\n" +
                 "\t\t\t<name>color</name>\n" +
-                "\t\t\t<value>TWOcolorTrianlge</value>\n" +
+                "\t\t\t<value>3_Pink</value>\n" +
+                "\t\t</String>\n" +
+                "\t\t<int>\n" +
+                "\t\t\t<name>size</name>\n" +
+                "\t\t\t<value>2</value>\n" +
+                "\t\t</int>\n" +
+                "\t\t<method>fill</method>\n" +
+                "\t\t<method>draw</method>\n" +
+                "\t</Triangle>\n" +
+                "\t<Triangle>\n" +
+                "\t\t<String>\n" +
+                "\t\t\t<name>color</name>\n" +
+                "\t\t\t<value>4_Yellow</value>\n" +
+                "\t\t</String>\n" +
+                "\t\t<int>\n" +
+                "\t\t\t<name>size</name>\n" +
+                "\t\t\t<value>2</value>\n" +
+                "\t\t</int>\n" +
+                "\t\t<method>fill</method>\n" +
+                "\t\t<method>draw</method>\n" +
+                "\t</Triangle>\n" +
+                "\t<Triangle>\n" +
+                "\t\t<String>\n" +
+                "\t\t\t<name>color</name>\n" +
+                "\t\t\t<value>5_Cyan</value>\n" +
                 "\t\t</String>\n" +
                 "\t\t<int>\n" +
                 "\t\t\t<name>size</name>\n" +
@@ -53,32 +104,27 @@ public class SerializeTest {
         Group g1 = new Group();
         Group g2 = new Group();
 
-        Circle c1 = new Circle("ONEcolorCircle", 1);
-        Triangle t2 = new Triangle("TWOcolorTrianlge", 2);
-        g2.addFigures(t2);
-        g1.addFigures(c1);
+
+        Circle c1 = new Circle("1_Black", 1);
+        Triangle t2 = new Triangle("2_Blue", 2);
+        Triangle t3 = new Triangle("3_Pink", 2);
+        Triangle t4 = new Triangle("4_Yellow", 2);
+        Triangle t5 = new Triangle("5_Cyan", 2);
+        g1.addFigures(t2, c1);
+        g2.addFigures(t3,t4,t5);
+
         g1.addAll(g2);
 
-        String expectedResult = "{\n" +
-                "\"Circle\" : {\n" +
-                "\t\"color\": \"ONEcolorCircle\",\n" +
-                "\t\"size\": \"1\",\n" +
-                "\t\"fill\" : {\n" +
-                "\t}\n" +
+        String expectedResult = "\"sb\",  \"list\": [{}{}] ,  \"childGroups\": [{}] , : \n" +
+                "{\"color\": \"2_Blue\",\"size\": \"2\", \"fill\" : {} \"draw\" : {}}\n" +
                 "\n" +
-                "\t\"draw\" : {\n" +
-                "\t}\n" +
-                "}\n" +
-                "\t{\n" +
-                "\t\"Triangle\" : {\n" +
-                "\t\t\"color\": \"TWOcolorTrianlge\",\n" +
-                "\t\t\"size\": \"2\",\n" +
-                "\t\t\"fill\" : {\n" +
-                "\t\t}\n" +
+                "{\"color\": \"1_Black\",\"size\": \"1\", \"fill\" : {} \"draw\" : {}}\n" +
+                "\"sb\",  \"list\": [{}{}{}] ,  \"childGroups\": [] , : \n" +
+                "{\"color\": \"3_Pink\",\"size\": \"2\", \"fill\" : {} \"draw\" : {}}\n" +
                 "\n" +
-                "\t\t\"draw\" : {\n" +
-                "\t\t}\n" +
-                "\t}\n";
+                "{\"color\": \"4_Yellow\",\"size\": \"2\", \"fill\" : {} \"draw\" : {}}\n" +
+                "\n" +
+                "{\"color\": \"5_Cyan\",\"size\": \"2\", \"fill\" : {} \"draw\" : {}}\n";
 
         Assert.assertEquals(expectedResult, SerializeToJson.serialize(g1));
     }

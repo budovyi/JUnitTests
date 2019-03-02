@@ -13,4 +13,12 @@ public class ThirdTaskTest {
         String actualResult = tt.findRanges(new int[] {1, 2, 3, 5, 8, 9, 10, 13, 14, 15, 16});
         Assert.assertEquals(expectedResult,  actualResult);
     }
+
+    @Test
+    public void testSuccessfulFindRangesTwo(){
+        ThirdTask tt = new ThirdTask();
+        String expectedResult = "[1 3][5][7]";
+        String actualResult = tt.findRanges(new int[] {1, 2, 3, 5, 7});
+        Assert.assertEquals(expectedResult,  actualResult);
+    }
 }

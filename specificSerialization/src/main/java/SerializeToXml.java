@@ -23,6 +23,41 @@ public class SerializeToXml {
         list = group.getList();
         Class clazz;
 
+        Class clazzTwo = group.getClass();
+        String brackets = "()";
+        sb.append("\n<Group>");
+        for (Field field : clazzTwo.getDeclaredFields()) {
+            field.setAccessible(true);
+            if (field.getName().equals("list")) {
+
+                sb.append("\n<").append(field.getName()).append(">");
+                int i = 0;
+                while (list.size() > i) {
+                    sb.append(brackets);
+                    i++;
+                }
+                sb.append("</").append(field.getName()).append(">");
+                sb.append(" ");
+            } else if (field.getName().equals("childGroups")) {
+                sb.append("\n<").append(field.getName()).append(">");
+                int t = 0;
+                while (childGroups.size() > t) {
+                    sb.append(brackets);
+                    t++;
+                }
+                sb.append("</").append(field.getName()).append(">");
+
+            } else {
+                sb.append("\n<").append(field.getName()).append(">");
+            }
+        }
+        sb.append("\n</Group>");
+
+
+
+
+
+
         for (Figure figure : list) {
             clazz = figure.getClass();
             String tabRepeat = String.join("", Collections.nCopies(count, TAB));

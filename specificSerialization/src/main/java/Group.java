@@ -4,8 +4,6 @@ import java.util.List;
 
 public class Group {
     private static StringBuilder sb = new StringBuilder();
-    private static int count = 0;
-    private String tabRepeat = String.join("", Collections.nCopies(count, "\t"));
     private List<Figure> list = new ArrayList();
     private List<Group> childGroups = new ArrayList();
 
@@ -36,5 +34,4 @@ public class Group {
     public List<Group> getChildGroups() {
         return childGroups;
     }
-
 }

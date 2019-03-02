@@ -11,7 +11,7 @@ public class CalculatorTest {
     private Calculator calculator;
 
     @Before
-    public void init(){
+    public void init() {
         calculator = new Calculator();
     }
 
@@ -26,6 +26,13 @@ public class CalculatorTest {
     public void testCalculatorShouldThrowIllegalArgumentException() {
         int expectedResult = 25;
         int actualResult = calculator.calculate("((8*5-3*(4+1)");
+        Assert.assertEquals(expectedResult, actualResult);
+    }
+
+    @Test
+    public void testCalculatorSuccessfully() {
+        int expectedResult = -4;
+        int actualResult = calculator.calculate("((-1 -1) * (-1 -1))/(-1)");
         Assert.assertEquals(expectedResult, actualResult);
     }
 
