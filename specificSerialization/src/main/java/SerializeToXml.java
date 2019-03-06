@@ -9,9 +9,9 @@ public class SerializeToXml {
     private static int count = 0;
     private static final String TAB = "\t";
     private static final String NUW = "\n";
-    private static String tabRepeat = String.join("", Collections.nCopies(count, "\t"));
+    private static String tabRepeat = String.join("", Collections.nCopies(count, TAB));
     private static List<Group> childGroups = new ArrayList();
-    private static List<Figure> list = new ArrayList();
+    private static List<Figure> figures = new ArrayList();
 
     public static String serialize(Group group) {
         toXml(group);
@@ -19,50 +19,69 @@ public class SerializeToXml {
     }
 
     private static void toXml(Group group) {
+        tabRepeat = String.join("", Collections.nCopies(count, TAB));
         childGroups = group.getChildGroups();
-        list = group.getList();
-        Class clazz;
+        figures = group.getFigures();
+        Class clazz = group.getClass();
+        Class clazzTwo;
 
-        for (Figure figure : list) {
-            clazz = figure.getClass();
-            String tabRepeat = String.join("", Collections.nCopies(count, TAB));
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
 
-            sb.append(NUW).append(tabRepeat).append("<").append(clazz.getName()).append(">");
-            for (Field f : clazz.getDeclaredFields().length < clazz.getSuperclass().getDeclaredFields().length ?
-                    clazz.getSuperclass().getDeclaredFields() :
-                    clazz.getDeclaredFields()) {
-                String fieldType = f.getAnnotatedType().getType().getTypeName()
-                        .replaceFirst("java.lang.", "");
-                f.setAccessible(true);
-                String value = null;
-                try {
-                    value = String.valueOf(f.get(figure));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+            if (field.getName().equals("figures")) {
+                sb.append(tabRepeat).append("<").append(field.getName()).append(">\n");
+                count++;
+                tabRepeat = String.join("", Collections.nCopies(count, TAB));
+
+                for (Figure figure : figures) {
+                    clazzTwo = figure.getClass();
+                    sb.append(tabRepeat).append("<").append(clazzTwo.getName()).append(">\n");
+                    count++;
+                    tabRepeat = String.join("", Collections.nCopies(count, TAB));
+                    for (Field f : clazzTwo.getDeclaredFields().length < clazzTwo.getSuperclass().getDeclaredFields().length ?
+                            clazzTwo.getSuperclass().getDeclaredFields() :
+                            clazzTwo.getDeclaredFields()) {
+                        String fieldType = f.getAnnotatedType().getType().getTypeName()
+                                .replaceFirst("java.lang.", "");
+                        f.setAccessible(true);
+                        String value = null;
+                        try {
+                            value = String.valueOf(f.get(figure));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        sb.append(tabRepeat).append("<").append(fieldType).append(">\n");
+                        sb.append(TAB).append(tabRepeat).append("<name>").append(f.getName()).append("</name>\n");
+                        sb.append(TAB).append(tabRepeat).append("<value>").append(value).append("</value>\n");
+                        sb.append(tabRepeat).append("</").append(fieldType).append(">\n");
+                    }
+                    for (Method met : clazzTwo.getDeclaredMethods()) {
+                        sb.append(tabRepeat).append("<method>").append(met.getName()).append("</method>\n");
+                    }
+                    count--;
+                    tabRepeat = String.join("", Collections.nCopies(count, TAB));
+                    sb.append(tabRepeat).append("</").append(clazzTwo.getName()).append(">\n");
                 }
+                count--;
+                tabRepeat = String.join("", Collections.nCopies(count, TAB));
+                sb.append(tabRepeat).append("</").append(field.getName()).append(">\n");
 
-                // xml build logic
-                sb.append(NUW + TAB).append(tabRepeat).append("<").append(fieldType).append(">");
-                sb.append(NUW + TAB + TAB).append(tabRepeat).append("<name>").append(f.getName()).append("</name>");
-                sb.append(NUW + TAB + TAB).append(tabRepeat).append("<value>").append(value).append("</value>");
-                sb.append(NUW + TAB).append(tabRepeat).append("</").append(fieldType).append(">");
-            }
-            for (Method met : clazz.getDeclaredMethods()) {
-                sb.append(NUW + TAB).append(tabRepeat).append("<method>").append(met.getName()).append("</method>");
-            }
-            sb.append(NUW).append(tabRepeat).append("</").append(clazz.getName()).append(">");
-        }
+            } else if (field.getName().equals("childGroups")) {
+                sb.append(tabRepeat).append("<").append(field.getName()).append(">\n");
 
-        if (!childGroups.isEmpty()) {
-            count++;
-            tabRepeat = String.join("", Collections.nCopies((count - 1), "\t"));
-            sb.append("\n" + tabRepeat).append("<").append("InnerGroupLevel " + (count)).append(">");
-            for (Group gr: childGroups) {
-                serialize(gr);
+                if (!childGroups.isEmpty()) {
+                    count++;
+                    for (Group gr : childGroups) {
+                        serialize(gr);
+                    }
+                    count--;
+                    tabRepeat = String.join("", Collections.nCopies(count, TAB));
+                    sb.append(tabRepeat).append("</").append(field.getName()).append(">\n");
+                } else {
+                    sb.append(tabRepeat).append("</").append(field.getName()).append(">\n");
+                }
             }
-            tabRepeat = String.join("", Collections.nCopies((count - 1), "\t"));
-            sb.append("\n" + tabRepeat).append("</").append("InnerGroupLevel " + (count)).append(">");
-            count--;
         }
     }
 }

@@ -7,11 +7,10 @@ import java.util.List;
 public class SerializeToJson {
     private static StringBuilder sb = new StringBuilder();
     private static int count = 0;
-    private static final String TAB = "\t";
-    private static final String NUW = "\n";
-    private static String tabRepeat = String.join("", Collections.nCopies(count, "\t"));
+    private static final String TAB = "  ";
+    private static String tabRepeat = String.join("", Collections.nCopies(count, TAB));
     private static List<Group> childGroups = new ArrayList();
-    private static List<Figure> list = new ArrayList();
+    private static List<Figure> listFigures = new ArrayList();
 
     public static String serialize(Group group) {
         toJson(group);
@@ -19,48 +18,76 @@ public class SerializeToJson {
     }
 
     private static void toJson(Group group) {
+        tabRepeat = String.join("", Collections.nCopies(count, TAB));
         childGroups = group.getChildGroups();
-        list = group.getList();
-        Class clazz;
+        listFigures = group.getFigures();
+        Class clazz = group.getClass();
+        Class clazzTwo;
 
-        for (Figure figure : list) {
-            clazz = figure.getClass();
-            String tabRepeat = String.join("", Collections.nCopies(count, TAB));
+        sb.append(tabRepeat).append("{\n");
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);
 
-            sb.append(tabRepeat).append("{\n");
-            sb.append(tabRepeat).append("\"").append(clazz.getName()).append("\" : ").append("{");
-            for (Field f : clazz.getDeclaredFields().length < clazz.getSuperclass().getDeclaredFields().length ?
-                    clazz.getSuperclass().getDeclaredFields() :
-                    clazz.getDeclaredFields()) {
-                f.setAccessible(true);
-                String value = null;
-                try {
-                    value = String.valueOf(f.get(figure));
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
+            if (field.getName().equals("figures")) {
+                sb.append(TAB).append(tabRepeat).append("\"").append(field.getName()).append("\": [\n");
+                count++;
+
+                tabRepeat = String.join("", Collections.nCopies(count, TAB));
+
+                for (Figure figure : listFigures) {
+                    clazzTwo = figure.getClass();
+
+                    sb.append(TAB).append(tabRepeat).append("{\n");
+                    count++;
+                    tabRepeat = String.join("", Collections.nCopies(count, TAB));
+
+                    for (Field fieldTwo : clazzTwo.getDeclaredFields().length < clazzTwo.getSuperclass().getDeclaredFields().length ?
+                            clazzTwo.getSuperclass().getDeclaredFields() :
+                            clazzTwo.getDeclaredFields()) {
+
+                        fieldTwo.setAccessible(true);
+                        String value = null;
+                        try {
+                            value = String.valueOf(fieldTwo.get(figure));
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        }
+
+                        sb.append(TAB).append(tabRepeat)
+                                .append("\"").append(fieldTwo.getName()).append("\": ")
+                                .append("\"").append(value).append("\",\n");
+                    }
+
+                    for (Method met : clazzTwo.getDeclaredMethods()) {
+                        sb.append(TAB).append(tabRepeat).append("\"")
+                                .append(met.getName()).append("\": {},\n");
+                    }
+                    sb.append(tabRepeat).append("},\n");
+                    count--;
+                    tabRepeat = String.join("", Collections.nCopies(count, TAB));
                 }
+                sb.append(tabRepeat).append("], \n");
+                count--;
+                tabRepeat = String.join("", Collections.nCopies(count, TAB));
 
-                // json build logic
-                sb.append(NUW + TAB).append(tabRepeat)
-                .append("\"").append(f.getName()).append("\": ")
-                .append("\"").append(value).append("\",");
-            }
 
-            for (Method met : clazz.getDeclaredMethods()) {
-                sb.append(NUW + TAB).append(tabRepeat).append("\"")
-                .append(met.getName()).append("\" : {");
-                sb.append(NUW + TAB).append(tabRepeat).append("}\n");
+            } else if (field.getName().equals("childGroups")) {
+                sb.append(TAB).append(tabRepeat).append("\"").append(field.getName()).append("\": [");
+
+                if (!childGroups.isEmpty()) {
+                    count += 2;
+                    for (Group gr : childGroups) {
+                        sb.append("\n");
+                        toJson(gr);
+                    }
+                    count -= 2;
+                    tabRepeat = String.join("", Collections.nCopies(count, TAB));
+                    sb.append(TAB).append(tabRepeat).append("]\n");
+                } else {
+                    sb.append("]\n");
+                }
             }
-            sb.append(tabRepeat).append("}\n");
         }
-        if (!childGroups.isEmpty()) {
-            count++;
-            tabRepeat = String.join("", Collections.nCopies((count - 1), "\t"));
-            for (Group gr : childGroups) {
-                toJson(gr);
-            }
-            tabRepeat = String.join("", Collections.nCopies((count - 1), "\t"));
-            count--;
-        }
+        sb.append(tabRepeat).append("}\n");
     }
 }

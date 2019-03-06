@@ -1,12 +1,9 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Group {
     private static StringBuilder sb = new StringBuilder();
-    private static int count = 0;
-    private String tabRepeat = String.join("", Collections.nCopies(count, "\t"));
-    private List<Figure> list = new ArrayList();
+    private List<Figure> figures = new ArrayList();
     private List<Group> childGroups = new ArrayList();
 
     public void addAll(Group... groups) {
@@ -17,24 +14,23 @@ public class Group {
 
     public void addFigures(Figure... figures) {
         for (Figure f : figures) {
-            list.add(f);
+            this.figures.add(f);
         }
     }
 
     public void remove(Figure figure) {
-        list.remove(figure);
+        figures.remove(figure);
     }
 
     public static String getSb() {
         return sb.toString();
     }
 
-    public List<Figure> getList() {
-        return list;
+    public List<Figure> getFigures() {
+        return figures;
     }
 
     public List<Group> getChildGroups() {
         return childGroups;
     }
-
 }
